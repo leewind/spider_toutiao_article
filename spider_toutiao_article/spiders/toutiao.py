@@ -112,6 +112,7 @@ class ToutiaoSpider(scrapy.Spider):
 
             if count[0] == 0:
                 scrapy_count = scrapy_count + 1
+                print article_info['detail_url']
                 yield scrapy.Request(url=article_info['detail_url'],
                                      callback=self.parse_content,
                                      meta={'article_info': article_info})
