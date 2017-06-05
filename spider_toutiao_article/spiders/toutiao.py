@@ -48,6 +48,21 @@ class ToutiaoSpider(scrapy.Spider):
         config = json.loads(config_info)
         file_reader.close()
         return config
+    
+    def check_not_exist(self, custom_item_id):
+        # 查看数据库中是否已经存在爬取数据
+        cursor = self.client.cursor()
+        query_count_sql = 'SELECT COUNT(*) FROM rough_article_info WHERE custom_item_id=%s'
+        cursor.execute(query_count_sql, [
+            custom_item_id
+        ])
+        count = cursor.fetchone()
+        cursor.close()
+
+        if count[0] == 0:
+            return True
+        else:
+            return False
 
     def start_requests(self):
         config = self.get_config()
@@ -102,15 +117,7 @@ class ToutiaoSpider(scrapy.Spider):
             )
 
             # 查看数据库中是否已经存在爬取数据
-            cursor = self.client.cursor()
-            query_count_sql = 'SELECT COUNT(*) FROM rough_article_info WHERE custom_item_id=%s'
-            cursor.execute(query_count_sql, [
-                article_info.get('custom_item_id')
-            ])
-            count = cursor.fetchone()
-            cursor.close()
-
-            if count[0] == 0:
+            if self.check_not_exist(article_info.get('custom_item_id')):
                 scrapy_count = scrapy_count + 1
                 print article_info['detail_url']
                 yield scrapy.Request(url=article_info['detail_url'],
