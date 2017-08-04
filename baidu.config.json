@@ -1,0 +1,7 @@
+{
+  "host": "mysql.rdsmqnen84uz0e1.rds.bj.baidubce.com",
+  "port": 3306,
+  "user": "rdsroot",
+  "passwd": "ilove1388",
+  "charset": "utf8"
+}

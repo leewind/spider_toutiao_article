@@ -2,6 +2,7 @@
 import urllib
 import json
 import time
+import re
 import MySQLdb as mdb
 import scrapy
 from ..items import LSpiderArticleInfo
@@ -136,7 +137,13 @@ class ToutiaoSpider(scrapy.Spider):
     def parse_content(self, response):
         article_info = response.meta['article_info']
 
-        context = response.css('div.article-content').extract_first()
+        pattern = re.compile(r'content: \'(.+)\'\.replace')
+        found = pattern.findall(response.body)
+        context = None
+        if found is not None and len(found) > 0:
+            context = found[0]
+
+        # context = response.css('div.article-content').extract_first()
         article_info['context'] = context
 
         return article_info
